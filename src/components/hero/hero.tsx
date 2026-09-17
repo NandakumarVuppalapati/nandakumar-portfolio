@@ -1,6 +1,6 @@
 import { HeroArtwork, HeroArtworkMobile } from "./hero-artwork";
 
-const CTA_PRIMARY_HREF = "#work";
+const CTA_PRIMARY_HREF = "#systems";
 const CTA_SECONDARY_HREF = "#contact";
 
 export function Hero() {

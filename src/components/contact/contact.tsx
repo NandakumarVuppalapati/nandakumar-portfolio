@@ -2,10 +2,10 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionIndex } from "@/components/ui/section-index";
 import { CONTACT_LINKS } from "./contact-links";
 
-// NOTE: numbered "04" because it's currently the fourth built section
-// (About / Experience / Engineering Mindset / Contact). Selected Systems
-// and Stack/How I Build still need to land between Engineering Mindset and
-// this section — when they do, bump this to "06" in the same change.
+// NOTE: numbered "05" — About(01) / Experience(02) / Engineering Mindset(03)
+// / Selected Systems(04) / Contact(05). Stack/How I Build still needs to
+// land between Selected Systems and this section — when it does, bump this
+// to "06" in the same change.
 export function Contact() {
   return (
     <section
@@ -15,7 +15,7 @@ export function Contact() {
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[96px_1fr_1fr] lg:items-start lg:gap-10">
-            <SectionIndex number="04" label="CONTACT" />
+            <SectionIndex number="05" label="CONTACT" />
 
             <h2 className="max-w-2xl text-2xl leading-[1.15] font-light text-foreground sm:text-3xl lg:text-4xl">
               Open to roles where

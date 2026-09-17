@@ -12,8 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const NAV_LINKS = [
   { href: "#about", label: "About", enabled: true },
   { href: "#experience", label: "Experience", enabled: true },
-  { href: "#systems", label: "Systems", enabled: false },
-  { href: "#work", label: "Work", enabled: false },
+  { href: "#systems", label: "Systems", enabled: true },
   { href: "#contact", label: "Contact", enabled: true },
 ];
 
