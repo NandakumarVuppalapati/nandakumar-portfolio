@@ -77,7 +77,7 @@ export function Hero() {
   );
 
   return (
-    <section id="home" aria-label="Introduction" className="relative isolate">
+    <section id="home" aria-label="Introduction" className="relative isolate scroll-mt-20">
       {/* Tablet + desktop: cinematic overlay, text sits in the photo's
           existing left negative space, subject stays on the right. */}
       <div className="hidden md:block">

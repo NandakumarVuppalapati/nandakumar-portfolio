@@ -4,7 +4,10 @@ import { ANCHORS } from "./about-anchors";
 
 export function About() {
   return (
-    <section id="about" className="relative border-t border-border pt-24 pb-14 lg:pt-32 lg:pb-16">
+    <section
+      id="about"
+      className="relative scroll-mt-20 border-t border-border pt-24 pb-14 lg:pt-32 lg:pb-16"
+    >
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
           <SectionIndex number="01" label="ABOUT" className="mb-8 lg:mb-10" />

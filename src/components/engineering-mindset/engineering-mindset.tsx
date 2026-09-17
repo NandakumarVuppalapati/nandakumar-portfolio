@@ -7,7 +7,7 @@ export function EngineeringMindset() {
   return (
     <section
       id="engineering-mindset"
-      className="relative border-t border-border pt-14 pb-24 lg:pt-16 lg:pb-32"
+      className="relative scroll-mt-20 border-t border-border pt-14 pb-24 lg:pt-16 lg:pb-32"
     >
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
