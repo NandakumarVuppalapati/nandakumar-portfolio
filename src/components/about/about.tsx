@@ -13,7 +13,11 @@ export function About() {
           <SectionIndex number="01" label="ABOUT" className="mb-8 lg:mb-10" />
 
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
-            <h2 className="max-w-2xl text-3xl leading-[1.15] font-light text-foreground sm:text-4xl lg:text-[2.75rem] xl:text-[3.25rem]">
+            {/* Matched to the text-2xl/3xl/4xl scale every other section's
+                h2 uses (Experience, Engineering Mindset, Selected Systems,
+                Contact) — this used to run noticeably larger, the one
+                inconsistent heading size on the page. */}
+            <h2 className="max-w-2xl text-2xl leading-[1.15] font-light text-foreground sm:text-3xl lg:text-4xl">
               I design the data layer
               <br />
               between raw events

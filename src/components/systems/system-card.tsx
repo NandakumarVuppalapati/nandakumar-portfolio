@@ -6,7 +6,7 @@ export function SystemCard({ system }: { system: SystemEntry }) {
   return (
     <Link
       href={`/systems/${system.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated transition-colors duration-150 hover:border-accent-cyan/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated transition-colors duration-150 hover:border-accent-cyan/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-background">
         {/* Top-right, not top-left: all three generated images already bake

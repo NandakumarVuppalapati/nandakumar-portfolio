@@ -79,8 +79,11 @@ export function Hero() {
   return (
     <section id="home" aria-label="Introduction" className="relative isolate scroll-mt-20">
       {/* Tablet + desktop: cinematic overlay, text sits in the photo's
-          existing left negative space, subject stays on the right. */}
-      <div className="hidden md:block">
+          existing left negative space, subject stays on the right.
+          min-h-dvh (not min-h-screen) makes this fill exactly one screen
+          even on mobile browsers whose UI chrome shrinks the viewport, so
+          the next section never peeks in above the fold on first load. */}
+      <div className="relative hidden min-h-dvh md:block">
         <HeroArtwork />
 
         <div className="absolute inset-0 z-10 flex items-center overflow-hidden">

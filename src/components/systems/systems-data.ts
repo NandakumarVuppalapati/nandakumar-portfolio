@@ -1,3 +1,16 @@
+export interface PipelineNode {
+  label: string;
+  detail: string;
+}
+
+export interface PipelineLane {
+  // Optional lane label for systems with more than one concurrent path
+  // (e.g. the fraud platform's real-time vs. training paths). Omitted for
+  // single-path systems.
+  label?: string;
+  nodes: PipelineNode[];
+}
+
 export interface SystemPostmortem {
   incident: string;
   date?: string;
@@ -21,6 +34,10 @@ export interface SystemEntry {
   whatCanFail: string;
   whatITriedToBreak: string;
   postmortem: SystemPostmortem;
+  // Structured, click-to-expand version of the `architecture` sentence
+  // above — same verified facts, restructured as nodes instead of prose.
+  // Nothing here states anything `architecture`/`whatIBuilt` don't already.
+  pipeline: PipelineLane[];
   techStack: string[];
   githubUrl: string;
 }
@@ -60,6 +77,37 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "Kafka Connect's RUNNING state is not a trustworthy recovery signal, on either side of the pipeline. The chaos script was rewritten to check real consumer-group lag on the sink side instead of trusting the framework's own status field. A clean re-run afterward: 155.6s kill-to-recovered, verified in Trino, not just in the script's own output.",
     },
+    pipeline: [
+      {
+        nodes: [
+          {
+            label: "PostgreSQL",
+            detail: "The live database Debezium reads from via logical replication.",
+          },
+          {
+            label: "Debezium",
+            detail: "Captures row-level changes and streams them through Kafka.",
+          },
+          {
+            label: "Kafka",
+            detail: "Carries the change-event stream into Iceberg.",
+          },
+          {
+            label: "Iceberg (Bronze)",
+            detail: "Bronze-layer tables, stored via MinIO with a Nessie catalog.",
+          },
+          {
+            label: "dbt",
+            detail:
+              "Transforms Bronze → Silver → Gold, enforcing dbt Model Contracts, Apicurio schema checks, and Great Expectations before promotion.",
+          },
+          {
+            label: "Trino",
+            detail: "Query engine used to read the finished Gold-layer tables.",
+          },
+        ],
+      },
+    ],
     techStack: [
       "PostgreSQL",
       "Debezium",
@@ -108,6 +156,43 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "Training ran end to end on the full dataset, not a sample. Real reported results: AUC-ROC 0.9749, Recall 90.0%, Precision 6.9% — precision deliberately traded down, since scale_pos_weight is tuned to catch 9 of 10 fraud cases, the standard cost asymmetry in fraud scoring.",
     },
+    pipeline: [
+      {
+        label: "Real-time path",
+        nodes: [
+          { label: "Kafka", detail: "Streams incoming transactions." },
+          {
+            label: "Flink SQL",
+            detail: "Computes rolling behavioral features per card in real time.",
+          },
+          { label: "Feast (push)", detail: "Pushes computed features into the online store." },
+          {
+            label: "Redis",
+            detail: "Online feature store FastAPI reads from at score time.",
+          },
+          { label: "FastAPI /score", detail: "Serves real-time fraud-risk scores." },
+        ],
+      },
+      {
+        label: "Training path",
+        nodes: [
+          {
+            label: "Kaggle dataset",
+            detail:
+              "The full 1,296,675-row dataset — trained at real scale, not a downsampled subset.",
+          },
+          { label: "Spark", detail: "Batch computation of the same feature definitions." },
+          {
+            label: "Parquet (offline store)",
+            detail: "Point-in-time-correct historical features for training.",
+          },
+          {
+            label: "MLflow",
+            detail: "Training run logged and the model registered for tracking.",
+          },
+        ],
+      },
+    ],
     techStack: [
       "Apache Kafka",
       "Apache Flink",
@@ -151,6 +236,39 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "CI-green stopped being treated as \"done.\" Real measured scores from a live run: faithfulness 82.2% / 87.0%, refusal rate 100% / 100% (openai vs. voyage embeddings) on the golden dataset, persisted and visible on a live Grafana dashboard next to real request-rate and cost panels.",
     },
+    pipeline: [
+      {
+        nodes: [
+          {
+            label: "SEC EDGAR filings",
+            detail: "Real 10-K/10-Q filings from 10 public companies.",
+          },
+          {
+            label: "Ingestion & chunking",
+            detail: "Prepares filing text for embedding.",
+          },
+          {
+            label: "Pinecone (2 indexes)",
+            detail:
+              "Two parallel indexes — voyage-finance-2 (finance-tuned) vs. text-embedding-3-small (general-purpose) — benchmarked against each other.",
+          },
+          {
+            label: "FastAPI + Claude Haiku",
+            detail: "Retrieval and grounded-answer generation.",
+          },
+          {
+            label: "Ragas eval",
+            detail:
+              "Scores the 66-question golden dataset, judged by GPT-4o-mini — a different model family, to avoid self-preference bias.",
+          },
+          { label: "Postgres", detail: "Stores results for regression tracking." },
+          {
+            label: "Airflow (nightly)",
+            detail: "Schedules the full run and flags regressions automatically.",
+          },
+        ],
+      },
+    ],
     techStack: [
       "Claude (Haiku)",
       "GPT-4o-mini (judge)",

@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SYSTEMS, getSystemBySlug } from "@/components/systems/systems-data";
+import { PipelineDiagram } from "@/components/systems/pipeline-diagram";
 
 export function generateStaticParams() {
   return SYSTEMS.map((system) => ({ slug: system.slug }));
@@ -101,15 +101,12 @@ export default async function SystemDetailPage({
           </span>
         </a>
 
-        <div className="relative mt-12 aspect-[16/10] overflow-hidden rounded-2xl border border-border bg-background-elevated lg:mt-14">
-          <Image
-            src={system.image}
-            alt={system.imageAlt}
-            fill
-            sizes="(min-width: 1024px) 1000px, 100vw"
-            className="object-cover"
-            priority
-          />
+        {/* The AI-generated artwork stays on the homepage card only — here,
+            in the place it used to sit, is the real architecture instead:
+            an interactive, click-to-expand diagram built from the same
+            verified pipeline this project's README and code describe. */}
+        <div className="mt-12 lg:mt-14">
+          <PipelineDiagram lanes={system.pipeline} />
         </div>
 
         <div className="mt-14 flex flex-col gap-10 border-t border-border pt-12 lg:mt-16 lg:gap-12 lg:pt-14">

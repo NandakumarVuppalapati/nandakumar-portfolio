@@ -11,31 +11,22 @@ import Image from "next/image";
 // width there, so the browser fetches only a trivial placeholder for it
 // instead of a full responsive image it will never display.
 //
-// The photograph's native aspect ratio is exactly 9:4 (3762/1672). At lg+
-// the artwork wrapper below is aspect-[2/1] — very slightly taller than the
-// native 9:4 to give the desktop hero more vertical presence — which trims
-// only ~11% of width, split evenly off both edges (object-position stays at
-// its default center, so the approved composition isn't shifted). That
-// crop is purely horizontal: it never touches the top or bottom of the
-// frame, so the subject and the full desk/laptop composition stay in view.
-// Below lg the wrapper is a shorter aspect-[3/2] so the tablet hero band
-// stays a comfortable height for the overlaid text; same horizontal-only
-// cropping logic applies there, just a larger share.
-//
-// max-h-[90vh] is a safety ceiling, not a normal-case constraint: on
-// standard desktop/laptop window shapes the aspect-ratio height never gets
-// close to 90% of the viewport, so it never engages. It only kicks in on
-// very wide + short windows (e.g. an ultrawide monitor), where it stops the
-// image from growing taller than the viewport and pushing the CTAs below
-// the fold — trading a bit more of the same symmetric horizontal crop for
-// guaranteed visibility, still centered, still never touching the subject.
+// The photograph's native aspect ratio is exactly 9:4 (3762/1672). The
+// desktop Hero is now sized to fill the viewport exactly (see the
+// `min-h-dvh` wrapper in hero.tsx) rather than being driven by the photo's
+// own aspect ratio, so this component fills that wrapper edge-to-edge
+// (`absolute inset-0`) and lets `object-cover` do the cropping — centered,
+// so the desk/laptop composition stays in frame on ordinary window shapes.
+// On a very wide + short window this crops a bit more off the top/bottom
+// than before; that's the deliberate trade-off for the Hero always filling
+// the first screen, which is now the higher priority.
 const ARTWORK_SRC = "/portrait/herofinal.png";
 const ARTWORK_ALT =
   "Nandakumar Vuppalapati, AI Data Engineer, at his desk in a dark office at night.";
 
 export function HeroArtwork() {
   return (
-    <div className="relative aspect-[3/2] max-h-[90vh] w-full overflow-hidden lg:aspect-[2/1]">
+    <div className="absolute inset-0 overflow-hidden">
       <Image
         src={ARTWORK_SRC}
         alt={ARTWORK_ALT}

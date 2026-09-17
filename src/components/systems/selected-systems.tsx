@@ -30,7 +30,7 @@ export function SelectedSystems() {
 
         <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-10">
           {SYSTEMS.map((system, index) => (
-            <Reveal key={system.slug} delayMs={index * 90}>
+            <Reveal key={system.slug} delayMs={index * 90} className="h-full">
               <SystemCard system={system} />
             </Reveal>
           ))}
