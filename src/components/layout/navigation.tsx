@@ -5,22 +5,41 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // but kept in place (not deleted) for whenever multi-theme work resumes.
 // import { ThemeToggle } from "@/components/theme/theme-toggle";
 
+// `enabled: false` means the target section isn't built yet, so the link
+// renders as inert (visible, unclickable, marked aria-disabled) rather than
+// a live link to an anchor that doesn't exist on the page. Flip an entry to
+// `true` in the same commit that ships its section.
 const NAV_LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#systems", label: "Systems" },
-  { href: "#work", label: "Work" },
-  { href: "#contact", label: "Contact" },
+  { href: "#about", label: "About", enabled: true },
+  { href: "#experience", label: "Experience", enabled: true },
+  { href: "#systems", label: "Systems", enabled: false },
+  { href: "#work", label: "Work", enabled: false },
+  { href: "#contact", label: "Contact", enabled: true },
 ];
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   const closeAndRestoreFocus = useCallback(() => {
     setIsOpen(false);
     triggerRef.current?.focus();
+  }, []);
+
+  // The header is fixed, so once the page scrolls, its content sits behind
+  // it unless the bar itself has a background. Below this threshold (still
+  // over the Hero) it stays transparent on purpose, cinematic per the design
+  // direction; past it, a solid + blurred background prevents scrolled
+  // content (headings, body text) from showing through and overlapping it.
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > 8);
+    }
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -66,8 +85,10 @@ export function Navigation() {
   return (
     <header className="fixed inset-x-0 top-0 z-40">
       <div
-        className={`relative z-20 mx-auto grid h-16 max-w-[1600px] grid-cols-3 items-center px-6 transition-colors duration-150 sm:px-8 lg:px-12 xl:px-16 ${
-          isOpen ? "bg-background" : "bg-transparent"
+        className={`relative z-20 mx-auto grid h-16 max-w-[1600px] grid-cols-3 items-center border-b px-6 transition-colors duration-150 sm:px-8 lg:px-12 xl:px-16 ${
+          isOpen || isScrolled
+            ? "border-border bg-background/90 backdrop-blur-md"
+            : "border-transparent bg-transparent"
         }`}
       >
         <a
@@ -81,15 +102,26 @@ export function Navigation() {
           aria-label="Primary"
           className="hidden items-center justify-self-center gap-8 md:flex"
         >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm text-foreground-muted transition-colors duration-150 hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) =>
+            link.enabled ? (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-sm text-foreground-muted transition-colors duration-150 hover:text-foreground"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <span
+                key={link.href}
+                aria-disabled="true"
+                title="Coming soon"
+                className="text-sm text-foreground-muted/40"
+              >
+                {link.label}
+              </span>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center justify-self-end gap-4">
@@ -129,16 +161,27 @@ export function Navigation() {
           ref={menuRef}
           className="fixed inset-x-0 top-16 bottom-0 z-10 flex flex-col gap-1 overflow-y-auto bg-background px-6 py-8 md:hidden"
         >
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsOpen(false)}
-              className="border-b border-border py-4 text-lg text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((link) =>
+            link.enabled ? (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className="border-b border-border py-4 text-lg text-foreground"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <span
+                key={link.href}
+                aria-disabled="true"
+                title="Coming soon"
+                className="border-b border-border py-4 text-lg text-foreground/40"
+              >
+                {link.label}
+              </span>
+            ),
+          )}
         </div>
       )}
     </header>
