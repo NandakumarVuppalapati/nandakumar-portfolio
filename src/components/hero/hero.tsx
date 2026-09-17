@@ -1,0 +1,61 @@
+import { HeroArtwork } from "./hero-artwork";
+
+const CTA_PRIMARY_HREF = "#work";
+const CTA_SECONDARY_HREF = "#contact";
+
+export function Hero() {
+  return (
+    <section id="home" aria-label="Introduction" className="relative isolate">
+      <HeroArtwork />
+
+      <div className="absolute inset-0 z-10 flex items-center overflow-hidden">
+        <div className="mx-auto w-full max-w-[1600px] px-6 py-16 sm:px-8 lg:px-12 xl:px-16">
+        <div className="flex flex-col gap-6 lg:max-w-xl lg:gap-7">
+          <p className="flex items-center gap-2.5 font-mono text-[0.7rem] tracking-[0.28em] text-foreground-muted sm:text-xs">
+            <span
+              aria-hidden="true"
+              className="hero-pulse-dot h-1.5 w-1.5 rounded-full bg-accent-cyan"
+            />
+            DATA <span aria-hidden="true">→</span> SYSTEMS{" "}
+            <span aria-hidden="true">→</span> INTELLIGENCE
+          </p>
+
+          <h1 className="text-[2.5rem] leading-[0.98] tracking-tight text-foreground uppercase sm:text-5xl md:text-6xl lg:text-[4rem] lg:leading-[0.95] xl:text-[4.5rem]">
+            <span className="block font-bold">Nandakumar</span>
+            <span className="block font-light">Vuppalapati</span>
+          </h1>
+
+          <p className="font-mono text-xs tracking-[0.24em] text-accent-blue sm:text-sm">
+            AI DATA ENGINEER
+          </p>
+
+          <p className="max-w-md text-lg leading-relaxed text-foreground-muted sm:text-xl">
+            I build data systems that power analytics &amp; AI.
+          </p>
+
+          <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:items-center sm:gap-6">
+            <a
+              href={CTA_PRIMARY_HREF}
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-colors duration-150 hover:bg-accent-cyan focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+            >
+              View My Work
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-150 group-hover:translate-x-0.5"
+              >
+                →
+              </span>
+            </a>
+            <a
+              href={CTA_SECONDARY_HREF}
+              className="inline-flex items-center justify-center text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:decoration-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+            >
+              Get In Touch
+            </a>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+  );
+}
