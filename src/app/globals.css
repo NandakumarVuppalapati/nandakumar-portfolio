@@ -82,6 +82,38 @@ body {
   transform: translateY(0);
 }
 
+/* One-shot technical-trace activation (Engineering Mindset). Resting and
+   final states are both fully legible foreground-muted text — only the
+   mid-point briefly lifts to the principle's accent color — so nothing is
+   ever hidden waiting on this. Triggered purely by the ancestor
+   .reveal-visible class Reveal already toggles; no extra JS. */
+@keyframes trace-activate {
+  0% {
+    color: var(--color-foreground-muted);
+    opacity: 0.7;
+  }
+  55% {
+    color: var(--trace-accent, var(--color-accent-cyan));
+    opacity: 1;
+  }
+  100% {
+    color: var(--color-foreground-muted);
+    opacity: 1;
+  }
+}
+
+.trace-segment {
+  color: var(--color-foreground-muted);
+  opacity: 0.7;
+}
+
+.reveal-visible .trace-segment {
+  animation-name: trace-activate;
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease-editorial);
+  animation-fill-mode: forwards;
+}
+
 @keyframes hero-pulse {
   0%,
   100% {
@@ -94,91 +126,6 @@ body {
 
 .hero-pulse-dot {
   animation: hero-pulse 2.6s ease-in-out infinite;
-}
-
-/* Signature data-pipeline animation: static conduits, moving packets, paths
-   that gently brighten while their packet is in transit. Pure CSS — the
-   component itself is a server component with no client JS. */
-.pipeline-path {
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-fill-mode: both;
-}
-
-.pipeline-packet {
-  offset-rotate: 0deg;
-  animation-name: pipeline-flow;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.pipeline-node {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: pipeline-node-pulse 5.2s ease-in-out infinite;
-}
-
-.pipeline-branch-fade {
-  animation-name: pipeline-branch-fade;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
-.pipeline-label {
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  fill: var(--color-foreground-muted);
-  opacity: 0.36;
-}
-
-@keyframes pipeline-path-glow {
-  0%,
-  100% {
-    opacity: var(--base-opacity, 0.16);
-  }
-  50% {
-    opacity: calc(var(--base-opacity, 0.16) + 0.18);
-  }
-}
-
-@keyframes pipeline-flow {
-  0% {
-    offset-distance: 0%;
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.4;
-  }
-  85% {
-    opacity: 0.4;
-  }
-  100% {
-    offset-distance: 100%;
-    opacity: 0;
-  }
-}
-
-@keyframes pipeline-node-pulse {
-  0%,
-  100% {
-    opacity: 0.18;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.36;
-    transform: scale(1.15);
-  }
-}
-
-@keyframes pipeline-branch-fade {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  45%,
-  55% {
-    opacity: 0.32;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -197,22 +144,6 @@ body {
   .hero-pulse-dot {
     animation: none;
     opacity: 1;
-  }
-
-  .pipeline-packet {
-    animation: none;
-    opacity: 0;
-  }
-
-  .pipeline-node {
-    animation: none;
-    opacity: 0.22;
-    transform: scale(1);
-  }
-
-  .pipeline-branch-fade {
-    animation: none;
-    opacity: 0.14;
   }
 
   .reveal {

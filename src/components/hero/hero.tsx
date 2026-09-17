@@ -5,13 +5,25 @@ const CTA_SECONDARY_HREF = "#contact";
 
 export function Hero() {
   const eyebrow = (
-    <p className="flex items-center gap-2.5 font-mono text-[0.7rem] tracking-[0.28em] text-foreground-muted sm:text-xs">
+    <p className="flex items-start gap-2.5 font-mono text-[0.7rem] tracking-[0.28em] text-foreground-muted sm:text-xs">
       <span
         aria-hidden="true"
-        className="hero-pulse-dot h-1.5 w-1.5 rounded-full bg-accent-cyan"
+        className="hero-pulse-dot mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cyan"
       />
-      DATA <span aria-hidden="true">→</span> SYSTEMS{" "}
-      <span aria-hidden="true">→</span> INTELLIGENCE
+      {/* Single text-flow span (one flex item) so this wraps like normal
+          text at narrow widths, instead of several loose text/element
+          children fighting a nowrap flex row. Each arrow is glued to its
+          preceding word via whitespace-nowrap so it can never end up
+          orphaned alone at the start of a wrapped line. */}
+      <span>
+        DATA{" "}
+        <span className="whitespace-nowrap">
+          <span aria-hidden="true">→</span> SYSTEMS
+        </span>{" "}
+        <span className="whitespace-nowrap">
+          <span aria-hidden="true">→</span> INTELLIGENCE
+        </span>
+      </span>
     </p>
   );
 
@@ -23,7 +35,10 @@ export function Hero() {
   );
 
   const role = (
-    <p className="font-mono text-xs tracking-[0.24em] text-accent-blue sm:text-sm">
+    // -mt-2 pulls this tighter to the name above it than the column's
+    // normal item-to-item rhythm — they read as one identity unit (name +
+    // title), while role -> statement -> eyebrow -> CTAs keep the full gap.
+    <p className="-mt-2 font-mono text-xs tracking-[0.24em] text-accent-blue sm:text-sm">
       AI DATA ENGINEER
     </p>
   );
@@ -50,7 +65,11 @@ export function Hero() {
       </a>
       <a
         href={CTA_SECONDARY_HREF}
-        className="inline-flex items-center justify-center text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:decoration-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+        // py-3 -my-3 grows the tap target to ~44px tall without adding any
+        // visible size: the negative margin cancels the padding's effect on
+        // surrounding layout, so it reads identically to the plain
+        // underlined link it was before, just easier to hit on a phone.
+        className="inline-flex items-center justify-center py-3 -my-3 text-sm font-medium text-foreground underline decoration-border underline-offset-4 transition-colors duration-150 hover:decoration-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
       >
         Get In Touch
       </a>
@@ -80,11 +99,11 @@ export function Hero() {
       {/* Mobile: an intentional stacked composition, not a squeezed desktop
           layout — identity first, portrait as its own full-bleed block,
           then CTAs, with the technical metadata line moved to the end. */}
-      <div className="flex flex-col gap-6 px-6 pb-14 pt-16 md:hidden">
+      <div className="flex flex-col gap-6 px-6 pb-14 pt-16 sm:px-8 md:hidden">
         {name}
         {role}
         {statement}
-        <div className="-mx-6">
+        <div className="-mx-6 sm:-mx-8">
           <HeroArtworkMobile />
         </div>
         {ctas}
