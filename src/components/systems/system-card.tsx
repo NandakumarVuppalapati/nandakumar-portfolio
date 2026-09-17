@@ -9,7 +9,10 @@ export function SystemCard({ system }: { system: SystemEntry }) {
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-background-elevated transition-colors duration-150 hover:border-accent-cyan/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-background">
-        <span className="absolute top-3.5 left-3.5 z-10 rounded-full bg-accent-cyan px-2.5 py-1 font-mono text-[0.62rem] tracking-[0.14em] text-background uppercase">
+        {/* Top-right, not top-left: all three generated images already bake
+            their own title text into the top-left corner, so a top-left
+            badge here collides with it. */}
+        <span className="absolute top-3.5 right-3.5 z-10 rounded-full bg-accent-cyan px-2.5 py-1 font-mono text-[0.62rem] tracking-[0.14em] text-background uppercase shadow-[0_1px_12px_rgba(0,0,0,0.5)]">
           {system.badge}
         </span>
         <Image
