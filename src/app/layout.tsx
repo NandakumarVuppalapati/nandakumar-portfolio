@@ -60,12 +60,24 @@ const THEME_INIT_SCRIPT = `
 // smooth-scroll every other scroll on this site uses — a ~1s animated
 // scroll from wherever it was frozen back up to the top would itself look
 // like a bug.
+//
+// Still reported after both of those shipped, on what sounds like a plain
+// fresh open (not a resumed tab) — which points at a third mechanism
+// neither of the above touches: iOS Safari can restore a tab's scroll
+// position as part of its own session/tab-hibernation restore (e.g. after
+// iOS reclaims Safari's memory in the background and relaunches it, or
+// after Safari itself was fully closed and reopened), which behaves like a
+// real navigation — scrollRestoration and pageshow's `persisted` flag don't
+// reliably cover it — and can apply the old scroll position slightly later
+// than this script runs, after the page has already painted at the top.
+// `correctScroll` below re-asserts the top (or the hash target) a few times
+// over the first half-second after load to catch that late correction too,
+// on top of the two hooks above.
 const SCROLL_RESTORATION_SCRIPT = `
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
-  window.addEventListener('pageshow', function (event) {
-    if (!event.persisted) return;
+  function correctScroll() {
     var hash = window.location.hash;
     if (hash) {
       var el = document.getElementById(hash.slice(1));
@@ -75,6 +87,24 @@ const SCROLL_RESTORATION_SCRIPT = `
       }
     }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
+  window.addEventListener('pageshow', function (event) {
+    if (!event.persisted) return;
+    correctScroll();
+  });
+  // Repeated, no-hash-only safety net for the initial load: if there's no
+  // hash to honor and the page is still sitting at a nonzero scrollY a
+  // moment after load, something outside our control restored it late —
+  // pull it back. Left to ScrollManager alone (its hash-target logic is
+  // more careful, waiting for layout to stabilize before scrolling), this
+  // only ever fires for the plain top-of-page case, so it can't fight that
+  // careful hash-scroll with an early instant jump.
+  [0, 100, 300, 600].forEach(function (delay) {
+    setTimeout(function () {
+      if (!window.location.hash && window.scrollY > 0) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    }, delay);
   });
 `;
 

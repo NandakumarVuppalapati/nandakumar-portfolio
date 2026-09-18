@@ -132,7 +132,17 @@ export function Navigation() {
           )}
         </nav>
 
-        <div className="flex items-center justify-self-end gap-4">
+        {/* col-start-3: without this, CSS grid auto-placement skips the
+            center <nav> on mobile entirely — display:none removes an
+            element from grid layout, it doesn't just make it invisible —
+            so this div, third in DOM order but now second among the
+            elements actually participating in the grid, gets auto-placed
+            into column 2 instead of 3. That's the "hamburger icon sitting
+            in the middle, interrupting the hero" bug: it wasn't misaligned
+            so much as parked at the end of the middle column instead of
+            the right one. Pinning it to column 3 explicitly keeps it there
+            regardless of whether the nav item is part of the grid. */}
+        <div className="col-start-3 flex items-center justify-self-end gap-4">
           <button
             ref={triggerRef}
             type="button"

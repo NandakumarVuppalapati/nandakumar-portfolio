@@ -83,15 +83,21 @@ export function HeroArtworkMobile() {
 // across the eyes/nose/mouth — which is the "name is overlapping the face"
 // bug. Wrapping the photo in a shorter box than the frame (a div taller
 // than 100% of the container, anchored to the bottom so the excess is
-// clipped off the top) forces genuine vertical cropping: it trims the empty
-// wall space and the top of the hair, which pushes the face's visible
-// position up into roughly the top third of the frame at any reasonable
-// phone height, leaving the lower half — shoulders, laptop, desk, already
-// the darkest/scrim-heaviest part of the photo — as the text's safe zone.
+// clipped off the top) forces genuine vertical cropping, trimming a slice
+// of empty wall space off the top so the face sits a little higher.
+//
+// First attempt at this used a much bigger crop (h-[132%], ~24% trimmed)
+// to guarantee zero overlap at any height — but that close a crop lost the
+// desk/room context around him and read as a tight, artificial headshot
+// ("looks like AI") rather than the candid at-his-desk photo it actually
+// is. h-[109%] (~8% trimmed) is a much gentler nudge — mostly just tightens
+// the headroom above his hair — and is paired with shortHeroContentProps
+// below, which trims the text block's own height on short viewports, so
+// clearance comes from both sides instead of leaning entirely on the crop.
 export function HeroArtworkMobileFull() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-x-0 bottom-0 h-[132%]">
+      <div className="absolute inset-x-0 bottom-0 h-[109%]">
         <Image
           src={ARTWORK_SRC}
           alt={ARTWORK_ALT}

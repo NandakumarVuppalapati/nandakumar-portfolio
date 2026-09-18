@@ -4,8 +4,16 @@ const CTA_PRIMARY_HREF = "#systems";
 const CTA_SECONDARY_HREF = "#contact";
 
 export function Hero() {
+  // Hidden below a 700px-tall viewport (mobile only — see the md:hidden
+  // wrapper below; a short desktop window is rare and unaffected in
+  // practice). It's the least essential line in the identity block, so on a
+  // short phone viewport (a fresh Safari load with the address bar still
+  // expanded is commonly under 700px tall) dropping it buys back vertical
+  // room, keeping the text block clear of the photo above it without
+  // needing a much tighter, more artificial-looking crop on the photo
+  // itself to compensate.
   const eyebrow = (
-    <p className="flex items-start gap-2.5 font-mono text-[0.7rem] tracking-[0.28em] text-foreground-muted sm:text-xs">
+    <p className="flex items-start gap-2.5 font-mono text-[0.7rem] tracking-[0.28em] text-foreground-muted sm:text-xs [@media(max-height:700px)]:hidden">
       <span
         aria-hidden="true"
         className="hero-pulse-dot mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-cyan"
@@ -115,7 +123,7 @@ export function Hero() {
       <div className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden md:hidden">
         <HeroArtworkMobileFull />
 
-        <div className="relative z-10 flex flex-col gap-4 px-6 pt-16 pb-10 sm:px-8">
+        <div className="relative z-10 flex flex-col gap-4 px-6 pt-16 pb-10 sm:px-8 [@media(max-height:700px)]:gap-2 [@media(max-height:700px)]:pb-6">
           {name}
           {role}
           {statement}
