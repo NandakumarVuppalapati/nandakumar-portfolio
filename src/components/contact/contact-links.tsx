@@ -43,6 +43,26 @@ function GitHubMark(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+function ResumeMark(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" aria-hidden="true" {...props}>
+      <path
+        d="M8 3.5h8.5L21 8v15.5a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1Z"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+      />
+      <path d="M16.5 3.5V8H21" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      <path
+        d="M10 14h8M10 17.5h8M10 21h5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export interface ContactLink {
   id: string;
   label: string;
@@ -56,7 +76,9 @@ export interface ContactLink {
 // (Nandakumar_Vuppalapati_Data_Engineer_Refined_Hybrid.docx); GitHub is the
 // account already used as the source-of-truth link on every Selected
 // Systems repo. Phone/city are deliberately left off the public site per
-// Nandakumar's own choice — email + LinkedIn only.
+// Nandakumar's own choice — email + LinkedIn only. Resume is the same docx,
+// converted to PDF and served as a static file — same content, not a
+// separate summary of it.
 export const CONTACT_LINKS: ContactLink[] = [
   {
     id: "email",
@@ -81,5 +103,13 @@ export const CONTACT_LINKS: ContactLink[] = [
     href: "https://github.com/NandakumarVuppalapati",
     colorVar: "var(--color-accent-violet)",
     Icon: GitHubMark,
+  },
+  {
+    id: "resume",
+    label: "RESUME",
+    value: "Download PDF",
+    href: "/resume-nandakumar-vuppalapati.pdf",
+    colorVar: "var(--color-accent-amber)",
+    Icon: ResumeMark,
   },
 ];

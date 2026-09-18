@@ -20,6 +20,23 @@ export interface SystemPostmortem {
   whatChanged: string;
 }
 
+// A single hard number for the scannable stat strip at the top of a
+// project page — every value here is copied verbatim from the postmortem
+// or architecture copy below, never a new figure.
+export interface ProjectMetric {
+  value: string;
+  label: string;
+}
+
+// A real screenshot that exists in the project's own repo (docs/screenshots
+// or equivalent) — not AI-generated art, not a mockup. Only populated where
+// the repo actually has one.
+export interface ProjectScreenshot {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
 export interface SystemEntry {
   slug: string;
   badge: string;
@@ -34,10 +51,13 @@ export interface SystemEntry {
   whatCanFail: string;
   whatITriedToBreak: string;
   postmortem: SystemPostmortem;
-  // Structured, click-to-expand version of the `architecture` sentence
-  // above — same verified facts, restructured as nodes instead of prose.
-  // Nothing here states anything `architecture`/`whatIBuilt` don't already.
+  metrics: ProjectMetric[];
+  // Structured, click-to-expand version of the real architecture diagram —
+  // sourced verbatim from each repo's own docs/architecture.md or README
+  // (fetched and cross-checked directly against the live mermaid diagram
+  // each repo renders), not a paraphrase or simplification of it.
   pipeline: PipelineLane[];
+  screenshots?: ProjectScreenshot[];
   techStack: string[];
   githubUrl: string;
 }
@@ -77,33 +97,51 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "Kafka Connect's RUNNING state is not a trustworthy recovery signal, on either side of the pipeline. The chaos script was rewritten to check real consumer-group lag on the sink side instead of trusting the framework's own status field. A clean re-run afterward: 155.6s kill-to-recovered, verified in Trino, not just in the script's own output.",
     },
+    metrics: [
+      { value: "155.6s", label: "kill-to-recovered (chaos test)" },
+      { value: "3", label: "independent contract-enforcement layers" },
+      { value: "3", label: "build tiers, each verified live" },
+      { value: "$0", label: "cloud bill — self-hosted" },
+    ],
+    // Sourced verbatim from docs/architecture.md in the repo (mermaid
+    // flowchart), fetched directly — not a simplification. The real
+    // diagram is a graph with a few branches (schema check, catalog,
+    // quality gates all running off the same core path); this ordered,
+    // click-to-expand version keeps every real node and calls out the
+    // branch it belongs to in its detail text.
     pipeline: [
       {
         nodes: [
           {
             label: "PostgreSQL",
-            detail: "The live database Debezium reads from via logical replication.",
+            detail: "Source database (shop schema). Debezium reads it via logical replication (WAL).",
           },
           {
             label: "Debezium",
-            detail: "Captures row-level changes and streams them through Kafka.",
+            detail: "PostgreSQL connector — captures row-level changes and streams them into Kafka.",
           },
           {
             label: "Kafka",
-            detail: "Carries the change-event stream into Iceberg.",
-          },
-          {
-            label: "Iceberg (Bronze)",
-            detail: "Bronze-layer tables, stored via MinIO with a Nessie catalog.",
-          },
-          {
-            label: "dbt",
             detail:
-              "Transforms Bronze → Silver → Gold, enforcing dbt Model Contracts, Apicurio schema checks, and Great Expectations before promotion.",
+              "KRaft-mode cluster carrying the CDC event stream. Every event is checked against the Apicurio schema registry before it's accepted.",
           },
           {
-            label: "Trino",
-            detail: "Query engine used to read the finished Gold-layer tables.",
+            label: "Iceberg sink",
+            detail:
+              "Kafka Connect sink writes events into Iceberg tables, catalogued through Nessie (git-like branching) and stored on MinIO (S3-compatible).",
+          },
+          {
+            label: "dbt / Trino / Great Expectations",
+            detail:
+              "Trino queries the lakehouse. dbt Core transforms Bronze → Silver → Gold with Model Contracts enforced; Great Expectations gates data quality at each tier.",
+          },
+          {
+            label: "Dagster",
+            detail: "Orchestrates dbt and Great Expectations end to end, with full asset lineage.",
+          },
+          {
+            label: "Prometheus / Grafana",
+            detail: "Watches Dagster's runs — the observability layer for the whole pipeline.",
           },
         ],
       },
@@ -157,39 +195,66 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "Training ran end to end on the full dataset, not a sample. Real reported results: AUC-ROC 0.9749, Recall 90.0%, Precision 6.9% — precision deliberately traded down, since scale_pos_weight is tuned to catch 9 of 10 fraud cases, the standard cost asymmetry in fraud scoring.",
     },
+    metrics: [
+      { value: "0.9749", label: "AUC-ROC, full 1.3M-row dataset" },
+      { value: "90.0%", label: "recall (catches 9/10 fraud cases)" },
+      { value: "1.3M", label: "rows trained on — not downsampled" },
+      { value: "1", label: "feature definition, 2 engines, 0 drift" },
+    ],
+    // Sourced verbatim from the repo's README mermaid flowchart (fetched
+    // directly), including real file names — ingestion/producer.py,
+    // feast_pusher.py, prepare_offline_features.py, train.py — so this
+    // matches the actual code, not a paraphrase of it.
     pipeline: [
       {
         label: "Real-time path",
         nodes: [
-          { label: "Kafka", detail: "Streams incoming transactions." },
+          {
+            label: "Kafka (transactions.raw)",
+            detail: "ingestion/producer.py replays the Kaggle dataset onto this topic.",
+          },
           {
             label: "Flink SQL",
-            detail: "Computes rolling behavioral features per card in real time.",
+            detail: "Computes rolling behavioral features per card_id, in real time.",
           },
-          { label: "Feast (push)", detail: "Pushes computed features into the online store." },
+          {
+            label: "feast_pusher.py",
+            detail: "Pushes Flink's computed features into the Feast online store.",
+          },
           {
             label: "Redis",
-            detail: "Online feature store FastAPI reads from at score time.",
+            detail: "Feast's online store — read by the API at score time via get_online_features.",
           },
-          { label: "FastAPI /score", detail: "Serves real-time fraud-risk scores." },
+          {
+            label: "FastAPI /score",
+            detail: "Loads models:/fraud-scorer@champion from MLflow and scores against Redis features.",
+          },
         ],
       },
       {
         label: "Training path",
         nodes: [
           {
-            label: "Kaggle dataset",
+            label: "creditcard.csv",
             detail:
-              "The full 1,296,675-row dataset — trained at real scale, not a downsampled subset.",
+              "The full 1,296,675-row Kaggle dataset — trained at real scale, not a downsampled subset.",
           },
-          { label: "Spark", detail: "Batch computation of the same feature definitions." },
+          {
+            label: "prepare_offline_features.py",
+            detail: "Spark batch job computing the same feature definitions as the Flink path.",
+          },
           {
             label: "Parquet (offline store)",
-            detail: "Point-in-time-correct historical features for training.",
+            detail: "Feast's offline store — point-in-time-correct historical features for training.",
+          },
+          {
+            label: "train.py",
+            detail:
+              "Reads the parquet directly rather than through Feast's point-in-time join — see the incident log below for why.",
           },
           {
             label: "MLflow",
-            detail: "Training run logged and the model registered for tracking.",
+            detail: "Training run logged and the model registered under the fraud-scorer alias.",
           },
         ],
       },
@@ -237,6 +302,15 @@ export const SYSTEMS: SystemEntry[] = [
       whatChanged:
         "CI-green stopped being treated as \"done.\" Real measured scores from a live run: faithfulness 82.2% / 87.0%, refusal rate 100% / 100% (openai vs. voyage embeddings) on the golden dataset, persisted and visible on a live Grafana dashboard next to real request-rate and cost panels.",
     },
+    metrics: [
+      { value: "87.0%", label: "faithfulness (voyage embeddings)" },
+      { value: "100%", label: "refusal rate on unanswerable questions" },
+      { value: "66", label: "question golden dataset" },
+      { value: "06:00", label: "UTC nightly regression run" },
+    ],
+    // Sourced verbatim from the repo's README mermaid flowchart (fetched
+    // directly), including the observability and regression-detection
+    // nodes the earlier version of this diagram left out.
     pipeline: [
       {
         nodes: [
@@ -246,7 +320,7 @@ export const SYSTEMS: SystemEntry[] = [
           },
           {
             label: "Ingestion & chunking",
-            detail: "Prepares filing text for embedding.",
+            detail: "Parses and chunks filing text for embedding.",
           },
           {
             label: "Pinecone (2 indexes)",
@@ -255,19 +329,56 @@ export const SYSTEMS: SystemEntry[] = [
           },
           {
             label: "FastAPI + Claude Haiku",
-            detail: "Retrieval and grounded-answer generation.",
+            detail:
+              "Retrieval and grounded-answer generation, exposed through /query, /health and /metrics endpoints.",
+          },
+          {
+            label: "Prometheus / Grafana",
+            detail: "Watches live API traffic off those endpoints — request rate, latency, cost.",
+          },
+          {
+            label: "Golden dataset (66 Qs)",
+            detail: "Airflow kicks this off nightly at 06:00 UTC against the live API.",
           },
           {
             label: "Ragas eval",
             detail:
-              "Scores the 66-question golden dataset, judged by GPT-4o-mini — a different model family, to avoid self-preference bias.",
+              "Scores the run, judged by GPT-4o-mini — a different model family, to avoid self-preference bias.",
           },
-          { label: "Postgres", detail: "Stores results for regression tracking." },
+          { label: "Postgres", detail: "eval_runs and eval_question_results — stored for regression tracking." },
           {
-            label: "Airflow (nightly)",
-            detail: "Schedules the full run and flags regressions automatically.",
+            label: "Regression detection",
+            detail:
+              "Compares against a rolling baseline; a real regression re-triggers an Airflow alert.",
           },
         ],
+      },
+    ],
+    // Real screenshots pulled directly from this repo's docs/screenshots/
+    // folder — not AI-generated art, not a mockup. Numbers visible in them
+    // (82.2% / 87.0% faithfulness, 100% / 100% refusal) match the
+    // postmortem above exactly, because they're screenshots of the same
+    // live run.
+    screenshots: [
+      {
+        src: "/systems/rag-eval-harness/grafana-dashboard.jpg",
+        alt: "Grafana dashboard showing nightly Ragas quality scores (faithfulness, relevancy, context precision/recall, refusal rate) per embedding model, plus live API traffic and cost panels.",
+        caption: "Live Grafana dashboard — nightly eval scores plus real API traffic and cost.",
+      },
+      {
+        src: "/systems/rag-eval-harness/airflow-dag-graph.jpg",
+        alt: "Airflow DAG graph view for rag_eval_harness_nightly, showing six parallel PythonOperator tasks across the openai and voyage embedding branches.",
+        caption: "The nightly DAG — parallel eval branches for both embedding models.",
+      },
+      {
+        src: "/systems/rag-eval-harness/airflow-dag-grid.jpg",
+        alt: "Airflow DAG run history grid for rag_eval_harness_nightly, showing a mix of successful and failed runs across tasks.",
+        caption: "Real run history, failures included — not a cherry-picked green run.",
+      },
+      {
+        src: "/systems/rag-eval-harness/api-docs.jpg",
+        alt: "FastAPI Swagger UI showing the /health, /query and /metrics endpoints with their request and response schemas.",
+        caption: "The live API's Swagger docs.",
       },
     ],
     techStack: [

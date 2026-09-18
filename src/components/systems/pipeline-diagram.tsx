@@ -67,8 +67,10 @@ function Lane({ lane, laneIndex }: { lane: PipelineLane; laneIndex: number }) {
 // Data-driven, click-to-expand architecture diagram — replaces a static
 // image on the project detail page with something that reflects each
 // system's real pipeline (see the `pipeline` field in systems-data.ts,
-// sourced directly from the same verified `architecture` copy). Each node
-// is a real <button>, so it's keyboard-navigable and screen-reader
+// fetched and cross-checked directly against the mermaid diagram each
+// repo's own docs/architecture.md or README actually renders — not a
+// paraphrase of it). Each node is a real <button>, so it's keyboard-
+// navigable and screen-reader
 // friendly, not just decorative.
 export function PipelineDiagram({ lanes }: { lanes: PipelineLane[] }) {
   return (

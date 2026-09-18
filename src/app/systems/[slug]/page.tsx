@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { SYSTEMS, getSystemBySlug } from "@/components/systems/systems-data";
 import { PipelineDiagram } from "@/components/systems/pipeline-diagram";
 import { TechStackGrid } from "@/components/systems/tech-stack-grid";
+import { ProjectMetrics } from "@/components/systems/project-metrics";
+import { ProjectScreenshots } from "@/components/systems/project-screenshots";
 
 export function generateStaticParams() {
   return SYSTEMS.map((system) => ({ slug: system.slug }));
@@ -75,6 +77,10 @@ export default async function SystemDetailPage({
         <p className="mt-5 max-w-2xl text-base leading-relaxed text-foreground-muted lg:text-lg">
           {system.summary}
         </p>
+
+        {/* A scannable stat row — a reviewer skims for a few seconds
+            before reading the full case study below. */}
+        <ProjectMetrics metrics={system.metrics} />
 
         <div className="mt-6 flex flex-wrap gap-2">
           {system.tags.map((tag) => (
@@ -148,6 +154,20 @@ export default async function SystemDetailPage({
             </dl>
           </div>
         </div>
+
+        {system.screenshots && system.screenshots.length > 0 && (
+          <div className="mt-14 border-t border-border pt-12 lg:mt-16 lg:pt-14">
+            <h2 className="font-mono text-xs tracking-[0.2em] text-accent-cyan uppercase">
+              Live system
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground-muted">
+              Real screenshots from the running system — pulled from the repo, not staged.
+            </p>
+            <div className="mt-6">
+              <ProjectScreenshots screenshots={system.screenshots} />
+            </div>
+          </div>
+        )}
 
         {/* Its own named, visually distinct section — not a leftover tag
             list under a "Tech stack" label. Each tile shows the technology's

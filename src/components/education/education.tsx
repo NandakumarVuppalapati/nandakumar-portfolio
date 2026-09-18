@@ -3,8 +3,9 @@ import { SectionIndex } from "@/components/ui/section-index";
 import { CERTIFICATIONS, EDUCATION_ENTRIES } from "./education-data";
 import { EducationRow } from "./education-row";
 
-// NOTE: numbered "05" — About(01) / Experience(02) / Engineering Mindset(03)
-// / Selected Systems(04) / Education & Certifications(05) / Contact(06).
+// NOTE: numbered "06" — About(01) / Experience(02) / Engineering Mindset(03)
+// / Selected Systems(04) / Technology(05) / Education & Certifications(06)
+// / Contact(07).
 export function Education() {
   return (
     <section
@@ -14,7 +15,7 @@ export function Education() {
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
           <SectionIndex
-            number="05"
+            number="06"
             label="EDUCATION & CERTIFICATIONS"
             className="mb-8 lg:mb-10"
           />

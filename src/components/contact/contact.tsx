@@ -2,8 +2,9 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionIndex } from "@/components/ui/section-index";
 import { CONTACT_LINKS } from "./contact-links";
 
-// NOTE: numbered "06" — About(01) / Experience(02) / Engineering Mindset(03)
-// / Selected Systems(04) / Education & Certifications(05) / Contact(06).
+// NOTE: numbered "07" — About(01) / Experience(02) / Engineering Mindset(03)
+// / Selected Systems(04) / Technology(05) / Education & Certifications(06)
+// / Contact(07).
 export function Contact() {
   return (
     <section
@@ -12,7 +13,7 @@ export function Contact() {
     >
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
-          <SectionIndex number="06" label="CONTACT" className="mb-8 lg:mb-10" />
+          <SectionIndex number="07" label="CONTACT" className="mb-8 lg:mb-10" />
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
             <h2 className="max-w-2xl text-2xl leading-[1.15] font-light text-foreground sm:text-3xl lg:text-4xl">
@@ -29,13 +30,14 @@ export function Contact() {
           </div>
         </Reveal>
 
-        <div className="mt-14 grid grid-cols-1 gap-10 border-t border-border pt-10 sm:grid-cols-3 lg:mt-16 lg:gap-16 lg:pt-12">
+        <div className="mt-14 grid grid-cols-2 gap-10 border-t border-border pt-10 lg:mt-16 lg:grid-cols-4 lg:gap-12 lg:pt-12">
           {CONTACT_LINKS.map((link, index) => (
             <Reveal key={link.id} delayMs={index * 90}>
               <a
                 href={link.href}
-                target={link.id === "email" ? undefined : "_blank"}
-                rel={link.id === "email" ? undefined : "noreferrer noopener"}
+                target={link.id === "email" || link.id === "resume" ? undefined : "_blank"}
+                rel={link.id === "email" || link.id === "resume" ? undefined : "noreferrer noopener"}
+                download={link.id === "resume" ? "Nandakumar-Vuppalapati-Resume.pdf" : undefined}
                 className="group flex flex-col gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-cyan"
               >
                 <link.Icon
