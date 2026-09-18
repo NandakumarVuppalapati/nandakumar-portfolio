@@ -18,7 +18,7 @@ export function TechStackGrid({ techStack }: { techStack: string[] }) {
           <div
             key={tech}
             tabIndex={icon ? 0 : undefined}
-            className="group flex items-center gap-3 rounded-lg border border-border px-3.5 py-3 transition-colors duration-150 hover:border-foreground-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
+            className="group flex min-w-0 items-center gap-3 rounded-lg border border-border px-3.5 py-3 transition-colors duration-150 hover:border-foreground-muted/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan"
           >
             {icon && (
               <svg
@@ -38,7 +38,7 @@ export function TechStackGrid({ techStack }: { techStack: string[] }) {
                 />
               </svg>
             )}
-            <span className="truncate font-mono text-xs tracking-[0.04em] text-foreground-muted transition-colors duration-150 group-hover:text-foreground">
+            <span className="min-w-0 flex-1 font-mono text-xs leading-snug tracking-[0.04em] text-foreground-muted transition-colors duration-150 group-hover:text-foreground">
               {icon ? icon.title : tech}
             </span>
           </div>

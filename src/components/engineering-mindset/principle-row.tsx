@@ -27,7 +27,7 @@ export function PrincipleRow({ principle }: { principle: Principle }) {
     <div className="flex items-start gap-5 py-10 lg:gap-8 lg:py-16">
       <p
         aria-hidden="true"
-        className="w-[1ch] shrink-0 font-mono text-5xl leading-none font-light text-foreground-muted/30 sm:text-6xl lg:w-[2ch] lg:text-7xl"
+        className="w-[2ch] shrink-0 font-mono text-5xl leading-none font-light text-foreground-muted/30 sm:text-6xl lg:text-7xl"
       >
         {principle.number}
       </p>
@@ -58,12 +58,17 @@ export function PrincipleRow({ principle }: { principle: Principle }) {
           <p className="text-sm leading-relaxed text-foreground-muted sm:text-base">
             {principle.supportingIdea}
           </p>
+          {/* flex-wrap, not an inline text run: the stage/arrow spans have no
+              literal whitespace text node between them (only CSS margin), so
+              as one unbroken inline run this never wraps — it silently ran
+              past the right edge on narrow phones instead. Each stage+arrow
+              is now its own wrap-able flex item. */}
           <p
-            className="mt-4 font-mono text-xs tracking-[0.18em] text-foreground-muted/70"
+            className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-1.5 font-mono text-xs tracking-[0.18em] text-foreground-muted/70"
             style={traceStyle}
           >
             {principle.trace.map((stage, index) => (
-              <span key={stage}>
+              <span key={stage} className="inline-flex items-center">
                 <span className="trace-segment" style={{ animationDelay: `${index * 200}ms` }}>
                   {stage}
                 </span>

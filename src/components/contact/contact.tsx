@@ -47,7 +47,7 @@ export function Contact() {
                 <p className="font-mono text-xs tracking-[0.2em] text-foreground">
                   {link.label}
                 </p>
-                <p className="max-w-xs text-sm leading-relaxed text-foreground-muted transition-colors duration-150 group-hover:text-foreground">
+                <p className="max-w-xs [overflow-wrap:anywhere] text-sm leading-relaxed text-foreground-muted transition-colors duration-150 group-hover:text-foreground">
                   {link.value}
                 </p>
               </a>

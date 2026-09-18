@@ -28,7 +28,14 @@ export function Hero() {
   );
 
   const name = (
-    <h1 className="text-[2.5rem] leading-[0.98] tracking-tight text-foreground uppercase sm:text-5xl md:text-[2.05rem] md:leading-[0.95] lg:text-[2.73rem] xl:text-[3.41rem]">
+    // Fluid clamp() on the base (sub-640px) size instead of a fixed 2.5rem:
+    // "NANDAKUMAR" in bold uppercase at a flat 2.5rem overflowed/clipped
+    // past the right edge on narrow phones (~320-360px, e.g. iPhone SE) —
+    // that clipped, run-off-the-edge look is what read as "stretched".
+    // clamp() scales the size down with the viewport instead of hitting a
+    // hard breakpoint cliff, so it stays inside the padding at any width
+    // below sm: while still reaching the original 2.5rem on wider phones.
+    <h1 className="text-[clamp(1.75rem,10vw,2.5rem)] leading-[0.98] tracking-tight text-foreground uppercase sm:text-5xl md:text-[2.05rem] md:leading-[0.95] lg:text-[2.73rem] xl:text-[3.41rem]">
       <span className="block font-bold">Nandakumar</span>
       <span className="block font-light">Vuppalapati</span>
     </h1>

@@ -28,10 +28,10 @@ export function Experience() {
         </Reveal>
 
         {EXPERIENCE_ENTRIES.length > 0 && (
-          <div className="mt-14 divide-y divide-border border-t border-border lg:mt-16">
+          <div className="mt-14 border-t border-border pt-12 lg:mt-16 lg:pt-14">
             {EXPERIENCE_ENTRIES.map((entry, index) => (
               <Reveal key={`${entry.organization}-${entry.dateRange}`} delayMs={index * 80}>
-                <ExperienceRow entry={entry} />
+                <ExperienceRow entry={entry} isLast={index === EXPERIENCE_ENTRIES.length - 1} />
               </Reveal>
             ))}
           </div>

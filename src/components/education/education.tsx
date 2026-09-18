@@ -1,12 +1,26 @@
 import { Reveal } from "@/components/ui/reveal";
 import { SectionIndex } from "@/components/ui/section-index";
 import { CERTIFICATIONS, EDUCATION_ENTRIES } from "./education-data";
-import { EducationRow } from "./education-row";
+import { EducationCard } from "./education-card";
 
 // NOTE: numbered "06" — About(01) / Experience(02) / Engineering Mindset(03)
 // / Selected Systems(04) / Technology(05) / Education & Certifications(06)
 // / Contact(07).
+//
+// Cards, not more resume rows: the entry with real transcript coursework
+// (the master's) gets a full-width featured card; the bachelor's and the
+// certification — both short, no long tag list — sit side by side as
+// compact cards below. Same rounded-2xl card language Selected Systems
+// already uses, so this section reads as part of the site's design system
+// instead of a third copy of the Experience list.
 export function Education() {
+  const featuredEntries = EDUCATION_ENTRIES.filter(
+    (entry) => entry.coursework && entry.coursework.length > 0,
+  );
+  const compactEntries = EDUCATION_ENTRIES.filter(
+    (entry) => !(entry.coursework && entry.coursework.length > 0),
+  );
+
   return (
     <section
       id="education"
@@ -34,34 +48,48 @@ export function Education() {
           </div>
         </Reveal>
 
-        <div className="mt-14 divide-y divide-border border-t border-border lg:mt-16">
-          {EDUCATION_ENTRIES.map((entry, index) => (
+        <div className="mt-14 flex flex-col gap-6 lg:mt-16">
+          {featuredEntries.map((entry, index) => (
             <Reveal key={`${entry.institution}-${entry.degree}`} delayMs={index * 80}>
-              <EducationRow entry={entry} />
+              <EducationCard entry={entry} featured />
             </Reveal>
           ))}
-        </div>
 
-        {CERTIFICATIONS.length > 0 && (
-          <div className="mt-10 grid grid-cols-1 gap-6 border-t border-border pt-10 sm:grid-cols-2 lg:mt-12 lg:gap-8 lg:pt-12">
-            {CERTIFICATIONS.map((cert, index) => (
-              <Reveal key={cert.name} delayMs={index * 80}>
-                <div className="flex items-start gap-3">
-                  <span aria-hidden="true" className="mt-1.5 h-4 w-[3px] shrink-0 bg-accent-amber" />
-                  <div>
-                    <p className="font-mono text-xs tracking-[0.2em] text-foreground-muted uppercase">
-                      Certification
-                    </p>
-                    <p className="mt-2 text-base font-medium text-foreground">{cert.name}</p>
-                    <p className="mt-1 text-sm text-foreground-muted">
-                      {cert.issuer} · {cert.year}
-                    </p>
+          {(compactEntries.length > 0 || CERTIFICATIONS.length > 0) && (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {compactEntries.map((entry, index) => (
+                <Reveal
+                  key={`${entry.institution}-${entry.degree}`}
+                  delayMs={(featuredEntries.length + index) * 80}
+                >
+                  <EducationCard entry={entry} />
+                </Reveal>
+              ))}
+
+              {CERTIFICATIONS.map((cert, index) => (
+                <Reveal
+                  key={cert.name}
+                  delayMs={(featuredEntries.length + compactEntries.length + index) * 80}
+                >
+                  <div className="rounded-2xl border border-border bg-background-elevated p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-mono text-[0.65rem] tracking-[0.18em] text-accent-amber uppercase">
+                          Certification
+                        </p>
+                        <p className="mt-2 text-lg font-medium text-foreground">{cert.name}</p>
+                        <p className="mt-1.5 text-sm text-foreground-muted">{cert.issuer}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full border border-border px-3 py-1 font-mono text-[0.65rem] tracking-[0.1em] text-foreground-muted">
+                        {cert.year}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        )}
+                </Reveal>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
