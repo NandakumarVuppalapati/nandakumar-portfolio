@@ -9,13 +9,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // renders as inert (visible, unclickable, marked aria-disabled) rather than
 // a live link to an anchor that doesn't exist on the page. Flip an entry to
 // `true` in the same commit that ships its section.
+// Every href is an absolute "/#id", not a bare "#id". A bare hash link only
+// ever edits the current page's URL — from a project detail page
+// (/systems/[slug]) there is no element with a matching id, so the NV logo
+// and every nav item silently did nothing there: no visible error, the menu
+// just didn't go anywhere. That's what made the site feel "stuck" once you
+// were a level in — there was no working way back to the homepage at all,
+// let alone to a specific section of it.
 const NAV_LINKS = [
-  { href: "#about", label: "About", enabled: true },
-  { href: "#experience", label: "Experience", enabled: true },
-  { href: "#systems", label: "Systems", enabled: true },
-  { href: "#technology", label: "Stack", enabled: true },
-  { href: "#education", label: "Education", enabled: true },
-  { href: "#contact", label: "Contact", enabled: true },
+  { href: "/#about", label: "About", enabled: true },
+  { href: "/#experience", label: "Experience", enabled: true },
+  { href: "/#systems", label: "Systems", enabled: true },
+  { href: "/#technology", label: "Stack", enabled: true },
+  { href: "/#education", label: "Education", enabled: true },
+  { href: "/#contact", label: "Contact", enabled: true },
 ];
 
 export function Navigation() {
@@ -93,7 +100,7 @@ export function Navigation() {
         }`}
       >
         <a
-          href="#home"
+          href="/#home"
           className="justify-self-start font-mono text-sm tracking-[0.2em] text-foreground transition-colors duration-150 hover:text-accent-cyan"
         >
           NV

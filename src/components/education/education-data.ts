@@ -14,14 +14,15 @@ export interface EducationEntry {
 // curated subset of the audit's real course list, chosen for relevance to
 // AI/data engineering (distributed systems, ML, networks & security,
 // information retrieval) — nothing on this list is invented, and nothing
-// off it was omitted to hide a weaker grade.
+// off it was omitted to hide a weaker grade. GPA is deliberately not shown
+// on the public site (Nandakumar's own call, same as leaving phone/city off
+// Contact) — the audit still backs it, it's just not displayed here.
 export const EDUCATION_ENTRIES: EducationEntry[] = [
   {
     degree: "Master of Science, Computer Science",
     institution: "University of South Dakota",
     location: "Vermillion, SD, USA",
     period: "2025",
-    gpa: "3.65 GPA",
     coursework: [
       "Distributed Systems",
       "Advanced Networks & Security",

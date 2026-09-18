@@ -60,3 +60,36 @@ export function HeroArtworkMobile() {
     </div>
   );
 }
+
+// Full-bleed mobile hero background — replaces HeroArtworkMobile's separate
+// "stacked block" treatment (name/role/statement, then a boxed-in photo,
+// then CTAs), which read as a picture pasted in between two chunks of text
+// rather than one composed hero. Desktop already runs the photo full-bleed
+// with text sitting directly on top of it, in the photo's own dark left
+// negative space; a tall phone crop has no equivalent open space, so a
+// gradient scrim stands in for it here, heaviest where the text block sits
+// at the bottom. Same "text lives on the photo" idea as desktop, adapted for
+// a portrait frame instead of a wide one.
+export function HeroArtworkMobileFull() {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <Image
+        src={ARTWORK_SRC}
+        alt={ARTWORK_ALT}
+        fill
+        priority
+        quality={95}
+        sizes="(min-width: 768px) 1px, 100vw"
+        className="object-cover object-[68%_22%]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/5"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-background/80 to-transparent"
+      />
+    </div>
+  );
+}

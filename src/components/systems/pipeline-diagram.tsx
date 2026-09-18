@@ -15,17 +15,24 @@ function Lane({ lane, laneIndex }: { lane: PipelineLane; laneIndex: number }) {
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-y-3">
+      {/* Below sm: a vertical stack with a "↓" connector — a lane with
+          several nodes used to wrap as a horizontal flex-wrap row of
+          [button, →] pairs, and whichever button happened to land last on a
+          wrapped line kept its trailing arrow, so arrows ended up dangling
+          mid-air, not visually connected to anything. Stacking top-to-bottom
+          below sm: (where a lane's nodes never fit on one line anyway) reads
+          as an actual flow instead of a jumbled, off-grid mess of chips. */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2 sm:gap-y-3">
         {lane.nodes.map((node, i) => {
           const isActive = activeIndex === i;
           return (
-            <div key={node.label} className="flex items-center">
+            <div key={node.label} className="flex flex-col items-stretch sm:flex-row sm:items-center">
               <button
                 type="button"
                 onClick={() => setActiveIndex(isActive ? null : i)}
                 aria-expanded={isActive}
                 aria-controls={`pipeline-detail-${laneIndex}`}
-                className={`rounded-lg border px-3.5 py-2.5 text-left font-mono text-[0.72rem] tracking-[0.03em] whitespace-nowrap transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan sm:text-xs ${
+                className={`w-full rounded-lg border px-3.5 py-2.5 text-left font-mono text-[0.72rem] tracking-[0.03em] whitespace-normal transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-cyan sm:w-auto sm:text-xs sm:whitespace-nowrap ${
                   isActive
                     ? "border-accent-cyan bg-accent-cyan/10 text-foreground"
                     : "border-border text-foreground-muted hover:border-foreground-muted/60 hover:text-foreground"
@@ -34,8 +41,12 @@ function Lane({ lane, laneIndex }: { lane: PipelineLane; laneIndex: number }) {
                 {node.label}
               </button>
               {i < lane.nodes.length - 1 && (
-                <span aria-hidden="true" className="px-2 text-foreground-muted/50">
-                  →
+                <span
+                  aria-hidden="true"
+                  className="self-center py-1 text-foreground-muted/50 sm:px-2 sm:py-0"
+                >
+                  <span className="sm:hidden">↓</span>
+                  <span className="hidden sm:inline">→</span>
                 </span>
               )}
             </div>

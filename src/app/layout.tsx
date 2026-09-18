@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Navigation } from "@/components/layout/navigation";
+import { ScrollManager } from "@/components/layout/scroll-manager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <ScrollManager />
         <Navigation />
         <main id="main-content" className="flex-1">
           {children}

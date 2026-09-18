@@ -1,4 +1,4 @@
-import { HeroArtwork, HeroArtworkMobile } from "./hero-artwork";
+import { HeroArtwork, HeroArtworkMobileFull } from "./hero-artwork";
 
 const CTA_PRIMARY_HREF = "#systems";
 const CTA_SECONDARY_HREF = "#contact";
@@ -106,18 +106,22 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Mobile: an intentional stacked composition, not a squeezed desktop
-          layout — identity first, portrait as its own full-bleed block,
-          then CTAs, with the technical metadata line moved to the end. */}
-      <div className="flex flex-col gap-6 px-6 pb-14 pt-16 sm:px-8 md:hidden">
-        {name}
-        {role}
-        {statement}
-        <div className="-mx-6 sm:-mx-8">
-          <HeroArtworkMobile />
+      {/* Mobile: the same "text lives on the photo" composition as desktop,
+          not a separate stacked block — the portrait runs full-bleed behind
+          the whole screen (min-h-dvh, same reasoning as the desktop wrapper:
+          fills exactly one screen even where mobile browser chrome shrinks
+          the viewport) with the identity block sitting directly on top of
+          it, anchored toward the bottom over the gradient scrim. */}
+      <div className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden md:hidden">
+        <HeroArtworkMobileFull />
+
+        <div className="relative z-10 flex flex-col gap-5 px-6 pt-24 pb-12 sm:px-8">
+          {name}
+          {role}
+          {statement}
+          {eyebrow}
+          {ctas}
         </div>
-        {ctas}
-        {eyebrow}
       </div>
     </section>
   );
