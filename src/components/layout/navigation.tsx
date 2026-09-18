@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "#about", label: "About", enabled: true },
   { href: "#experience", label: "Experience", enabled: true },
   { href: "#systems", label: "Systems", enabled: true },
+  { href: "#education", label: "Education", enabled: true },
   { href: "#contact", label: "Contact", enabled: true },
 ];
 

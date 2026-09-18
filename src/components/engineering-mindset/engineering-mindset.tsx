@@ -11,9 +11,9 @@ export function EngineeringMindset() {
     >
       <div className="mx-auto max-w-[1600px] px-6 sm:px-8 lg:px-12 xl:px-16">
         <Reveal>
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[96px_1fr_1fr] lg:items-start lg:gap-10">
-            <SectionIndex number="03" label="ENGINEERING MINDSET" />
+          <SectionIndex number="03" label="ENGINEERING MINDSET" className="mb-8 lg:mb-10" />
 
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
             <h2 className="max-w-2xl text-2xl leading-[1.15] font-light text-foreground sm:text-3xl lg:text-4xl">
               Reliability begins long before
               <br />

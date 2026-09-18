@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { SYSTEMS, getSystemBySlug } from "@/components/systems/systems-data";
 import { PipelineDiagram } from "@/components/systems/pipeline-diagram";
+import { TechStackGrid } from "@/components/systems/tech-stack-grid";
 
 export function generateStaticParams() {
   return SYSTEMS.map((system) => ({ slug: system.slug }));
@@ -148,19 +149,21 @@ export default async function SystemDetailPage({
           </div>
         </div>
 
+        {/* Its own named, visually distinct section — not a leftover tag
+            list under a "Tech stack" label. Each tile shows the technology's
+            real, verified logo (see tech-icons-data.ts) at neutral tone,
+            switching to its official brand color on hover/focus; anything
+            without a verified mark still renders as a plain tile rather than
+            a guessed logo. */}
         <div className="mt-14 border-t border-border pt-12 lg:mt-16 lg:pt-14">
           <h2 className="font-mono text-xs tracking-[0.2em] text-foreground-muted uppercase">
-            Tech stack
+            Technology Stack
           </h2>
-          <div className="mt-5 flex flex-wrap gap-2">
-            {system.techStack.map((tech) => (
-              <span
-                key={tech}
-                className="rounded-full border border-border px-2.5 py-1 font-mono text-[0.65rem] tracking-[0.04em] text-foreground-muted"
-              >
-                {tech}
-              </span>
-            ))}
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground-muted">
+            Every tool this system actually runs on, end to end.
+          </p>
+          <div className="mt-6">
+            <TechStackGrid techStack={system.techStack} />
           </div>
         </div>
       </div>
