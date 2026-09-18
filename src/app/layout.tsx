@@ -29,6 +29,24 @@ const THEME_INIT_SCRIPT = `
   document.documentElement.setAttribute('data-theme', 'dark');
 `;
 
+// Opening or refreshing the site was landing scrolled almost to the bottom
+// instead of at the Hero. Root cause: the browser's own scroll restoration
+// (history.scrollRestoration = "auto", the default) replays whatever scrollY
+// this tab last had for this page — so if you'd scrolled down to Contact
+// before hitting refresh, or reopened a tab the browser kept alive in the
+// background, it snaps straight back to that old position. ScrollManager
+// (a React component) also turns this off, but a useEffect only runs after
+// hydration — by then the browser has usually already applied its
+// restoration for this load, so disabling it there was closing the door
+// after the scroll jump already happened. Doing it here, in a
+// beforeInteractive script, runs before the browser gets to restore
+// anything on this very load, not just future ones.
+const SCROLL_RESTORATION_SCRIPT = `
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -39,6 +57,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
         <Script id="theme-init" strategy="beforeInteractive">
           {THEME_INIT_SCRIPT}
+        </Script>
+        <Script id="scroll-restoration-init" strategy="beforeInteractive">
+          {SCROLL_RESTORATION_SCRIPT}
         </Script>
         <a
           href="#main-content"
