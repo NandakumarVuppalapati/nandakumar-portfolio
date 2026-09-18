@@ -115,7 +115,7 @@ export function Hero() {
       <div className="relative isolate flex min-h-dvh flex-col justify-end overflow-hidden md:hidden">
         <HeroArtworkMobileFull />
 
-        <div className="relative z-10 flex flex-col gap-5 px-6 pt-24 pb-12 sm:px-8">
+        <div className="relative z-10 flex flex-col gap-4 px-6 pt-16 pb-10 sm:px-8">
           {name}
           {role}
           {statement}

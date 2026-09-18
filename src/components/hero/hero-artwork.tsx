@@ -70,18 +70,38 @@ export function HeroArtworkMobile() {
 // gradient scrim stands in for it here, heaviest where the text block sits
 // at the bottom. Same "text lives on the photo" idea as desktop, adapted for
 // a portrait frame instead of a wide one.
+//
+// The source photo is a wide 9:4 desk shot (herofinal.png, 3762x1672) — in a
+// tall portrait box, object-cover's "cover" scale is always driven by
+// height, not width, so the ENTIRE vertical extent of the photo is always
+// visible (there is no vertical overflow left for object-position's Y value
+// to crop). That put the subject's face at a fixed ~27-58% band of frame
+// height regardless of viewport height. On a shorter phone viewport (e.g. a
+// fresh Safari load with the address bar still expanded, effectively
+// ~600-700px tall) the text block below is tall enough, relative to that
+// shorter frame, that its top edge landed in the middle of that band —
+// across the eyes/nose/mouth — which is the "name is overlapping the face"
+// bug. Wrapping the photo in a shorter box than the frame (a div taller
+// than 100% of the container, anchored to the bottom so the excess is
+// clipped off the top) forces genuine vertical cropping: it trims the empty
+// wall space and the top of the hair, which pushes the face's visible
+// position up into roughly the top third of the frame at any reasonable
+// phone height, leaving the lower half — shoulders, laptop, desk, already
+// the darkest/scrim-heaviest part of the photo — as the text's safe zone.
 export function HeroArtworkMobileFull() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <Image
-        src={ARTWORK_SRC}
-        alt={ARTWORK_ALT}
-        fill
-        priority
-        quality={95}
-        sizes="(min-width: 768px) 1px, 100vw"
-        className="object-cover object-[68%_22%]"
-      />
+      <div className="absolute inset-x-0 bottom-0 h-[132%]">
+        <Image
+          src={ARTWORK_SRC}
+          alt={ARTWORK_ALT}
+          fill
+          priority
+          quality={95}
+          sizes="(min-width: 768px) 1px, 100vw"
+          className="object-cover object-[68%_100%]"
+        />
+      </div>
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/5"

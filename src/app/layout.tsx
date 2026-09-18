@@ -30,21 +30,52 @@ const THEME_INIT_SCRIPT = `
 `;
 
 // Opening or refreshing the site was landing scrolled almost to the bottom
-// instead of at the Hero. Root cause: the browser's own scroll restoration
-// (history.scrollRestoration = "auto", the default) replays whatever scrollY
-// this tab last had for this page — so if you'd scrolled down to Contact
-// before hitting refresh, or reopened a tab the browser kept alive in the
-// background, it snaps straight back to that old position. ScrollManager
+// instead of at the Hero. Root cause #1: the browser's own scroll
+// restoration (history.scrollRestoration = "auto", the default) replays
+// whatever scrollY this tab last had for this page on a reload. ScrollManager
 // (a React component) also turns this off, but a useEffect only runs after
 // hydration — by then the browser has usually already applied its
 // restoration for this load, so disabling it there was closing the door
-// after the scroll jump already happened. Doing it here, in a
+// after the scroll jump already happened. Setting it here, in a
 // beforeInteractive script, runs before the browser gets to restore
-// anything on this very load, not just future ones.
+// anything on that load.
+//
+// That alone didn't fully fix it, because there's a second, different
+// mechanism: root cause #2 is the browser's back/forward cache (bfcache) —
+// on mobile Safari especially, backgrounding the tab (switching apps,
+// letting it sit) and coming back to it, or reopening a recently-used tab,
+// doesn't reload the page at all. The browser resumes an exact frozen
+// snapshot of it, scroll position included, and does so entirely outside
+// the History API — history.scrollRestoration has no effect on it, and no
+// React code re-runs (the page isn't re-rendering, it's being thawed as-is),
+// so ScrollManager's effects don't fire either. That's the "just opening it"
+// case landing scrolled down even with the fix above in place. The
+// `pageshow` event is the one signal that DOES fire on a bfcache resume
+// (with event.persisted === true) while a normal fresh load reports it as
+// false, so this listener is the only hook available to correct it: reset
+// to the hash target if the URL has one, otherwise straight to the top.
+// Because the resumed page is already painted and visible the instant this
+// fires (unlike a fresh load, where the correction happens before the user
+// sees anything), the reset uses behavior: 'instant' rather than the CSS
+// smooth-scroll every other scroll on this site uses — a ~1s animated
+// scroll from wherever it was frozen back up to the top would itself look
+// like a bug.
 const SCROLL_RESTORATION_SCRIPT = `
   if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
   }
+  window.addEventListener('pageshow', function (event) {
+    if (!event.persisted) return;
+    var hash = window.location.hash;
+    if (hash) {
+      var el = document.getElementById(hash.slice(1));
+      if (el) {
+        el.scrollIntoView({ behavior: 'instant', block: 'start' });
+        return;
+      }
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  });
 `;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
