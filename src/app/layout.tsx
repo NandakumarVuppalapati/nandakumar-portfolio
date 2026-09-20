@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nandakumar Vuppalapati — AI Data Engineer",
+  title: "Nandakumar Vuppalapati — Senior Data Engineer",
   description: "I build data systems that power analytics & AI.",
 };
 

@@ -53,8 +53,11 @@ export function Hero() {
     // -mt-2 pulls this tighter to the name above it than the column's
     // normal item-to-item rhythm — they read as one identity unit (name +
     // title), while role -> statement -> eyebrow -> CTAs keep the full gap.
+    // "SENIOR DATA ENGINEER" per Nandakumar's final resume (0926), which
+    // bumped his title from "AI Data Engineer" — see experience-data.ts's
+    // header comment for the rest of what changed alongside it.
     <p className="-mt-2 font-mono text-xs tracking-[0.24em] text-accent-blue sm:text-sm">
-      AI DATA ENGINEER
+      SENIOR DATA ENGINEER
     </p>
   );
 

@@ -1,29 +1,37 @@
 import Image from "next/image";
 
-// public/portrait/herofinal.png (3762x1672) is the APPROVED, FINAL
-// production portrait. Served through next/image's optimizer at quality 95
-// (next.config.ts allowlists it specifically for this photo, to stay ahead
-// of visible compression softness) rather than `unoptimized`, so each
-// breakpoint gets a properly-sized, format-negotiated (WebP/AVIF) file
-// instead of the same ~6.9MB source PNG regardless of viewport. The two
-// components below are complementary: whichever one is CSS-hidden at the
-// current breakpoint (see hero.tsx) declares `sizes` as an effectively-zero
-// width there, so the browser fetches only a trivial placeholder for it
-// instead of a full responsive image it will never display.
+// public/portrait/nandakumar-original.jpeg (1600x1587, near-square) is the
+// REAL photo this Hero is built from — a plain portrait against a bare dark
+// wall, no staged desk/laptop/bookshelf scene. It replaces herofinal.png,
+// which was a different, AI-composited image (same face, a generated
+// office backdrop and props built around it) that read as synthetic under
+// close inspection — exactly the kind of thing worth not having on a page
+// aimed at the audience most likely to notice. This file trades that
+// generated backdrop's visual variety for something plainer but genuinely
+// his: a dark gradient over the wall stands in for a "scene," the same way
+// the gradient-over-photo treatment already works elsewhere on this page.
 //
-// The photograph's native aspect ratio is exactly 9:4 (3762/1672). The
-// desktop Hero is now sized to fill the viewport exactly (see the
-// `min-h-dvh` wrapper in hero.tsx) rather than being driven by the photo's
-// own aspect ratio, so this component fills that wrapper edge-to-edge
-// (`absolute inset-0`) and lets `object-cover` do the cropping — centered,
-// so the desk/laptop composition stays in frame on ordinary window shapes.
-// On a very wide + short window this crops a bit more off the top/bottom
-// than before; that's the deliberate trade-off for the Hero always filling
-// the first screen, which is now the higher priority.
-const ARTWORK_SRC = "/portrait/herofinal.png";
-const ARTWORK_ALT =
-  "Nandakumar Vuppalapati, AI Data Engineer, at his desk in a dark office at night.";
+// Served through next/image's optimizer at quality 100 (next.config.ts
+// allowlists it) rather than `unoptimized`, so each breakpoint gets a
+// properly-sized WebP file instead of the same ~120KB source JPEG
+// regardless of viewport — small enough here that this matters less than
+// it did for the old 6.9MB master, but the pattern stays consistent.
+const ARTWORK_SRC = "/portrait/nandakumar-original.jpeg";
+// Title bumped to "Senior Data Engineer" alongside the rest of the site —
+// see experience-data.ts's header comment for the resume this traces to.
+const ARTWORK_ALT = "Nandakumar Vuppalapati, Senior Data Engineer.";
 
+// Desktop: a roughly-square source in a wide viewport means object-cover's
+// scale is driven by width, not height (the opposite of the mobile case
+// below) — there IS real vertical overflow here, so object-position's Y
+// value actually does something, unlike it did on the old wide photo in a
+// portrait mobile box. Biased toward the top of the frame (his head sits in
+// the top ~45% of the source) so cropping trims shirt/torso from the
+// bottom, not hair from the top. The gradient runs left-to-right rather
+// than the old photo's built-in negative space — this source has none, it's
+// a plain wall on both sides of him — so the gradient manufactures the same
+// "text sits in the dark part of the photo" effect the desktop layout
+// depends on.
 export function HeroArtwork() {
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -32,9 +40,13 @@ export function HeroArtwork() {
         alt={ARTWORK_ALT}
         fill
         priority
-        quality={95}
+        quality={100}
         sizes="(max-width: 767px) 1px, 100vw"
-        className="object-cover"
+        className="object-cover object-[50%_22%]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-background/10"
       />
     </div>
   );
@@ -45,6 +57,12 @@ export function HeroArtwork() {
 // of the frame where the subject sits, per the approved mobile hierarchy:
 // name/role/statement -> portrait -> CTAs. The crop trims background wall
 // space, not the subject; his head, hands, laptop, and desk stay in frame.
+//
+// NOTE: written for the old herofinal.png composition (subject weighted
+// right, desk visible). Unused since HeroArtworkMobileFull replaced it —
+// kept only per the earlier note that it might be wanted again — so it
+// hasn't been re-tuned for nandakumar-original.jpeg. Re-check the crop
+// before reviving it.
 export function HeroArtworkMobile() {
   return (
     <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -53,7 +71,7 @@ export function HeroArtworkMobile() {
         alt={ARTWORK_ALT}
         fill
         priority
-        quality={95}
+        quality={100}
         sizes="(min-width: 768px) 1px, 100vw"
         className="object-cover object-[78%_center]"
       />
@@ -61,56 +79,36 @@ export function HeroArtworkMobile() {
   );
 }
 
-// Full-bleed mobile hero background — replaces HeroArtworkMobile's separate
-// "stacked block" treatment (name/role/statement, then a boxed-in photo,
-// then CTAs), which read as a picture pasted in between two chunks of text
-// rather than one composed hero. Desktop already runs the photo full-bleed
-// with text sitting directly on top of it, in the photo's own dark left
-// negative space; a tall phone crop has no equivalent open space, so a
-// gradient scrim stands in for it here, heaviest where the text block sits
-// at the bottom. Same "text lives on the photo" idea as desktop, adapted for
-// a portrait frame instead of a wide one.
+// Full-bleed mobile hero background — the photo runs edge-to-edge behind
+// the whole screen with the identity block sitting directly on top of it,
+// anchored toward the bottom over a gradient scrim. Same "text lives on the
+// photo" idea as desktop, adapted for a portrait frame.
 //
-// The source photo is a wide 9:4 desk shot (herofinal.png, 3762x1672) — in a
-// tall portrait box, object-cover's "cover" scale is always driven by
-// height, not width, so the ENTIRE vertical extent of the photo is always
-// visible (there is no vertical overflow left for object-position's Y value
-// to crop). That put the subject's face at a fixed ~27-58% band of frame
-// height regardless of viewport height. On a shorter phone viewport (e.g. a
-// fresh Safari load with the address bar still expanded, effectively
-// ~600-700px tall) the text block below is tall enough, relative to that
-// shorter frame, that its top edge landed in the middle of that band —
-// across the eyes/nose/mouth — which is the "name is overlapping the face"
-// bug. Wrapping the photo in a shorter box than the frame (a div taller
-// than 100% of the container, anchored to the bottom so the excess is
-// clipped off the top) forces genuine vertical cropping, trimming a slice
-// of empty wall space off the top so the face sits a little higher.
-//
-// First attempt at this used a much bigger crop (h-[132%], ~24% trimmed)
-// to guarantee zero overlap at any height — but that close a crop lost the
-// desk/room context around him and read as a tight, artificial headshot
-// ("looks like AI") rather than the candid at-his-desk photo it actually
-// is. h-[109%] (~8% trimmed) is a much gentler nudge — mostly just tightens
-// the headroom above his hair — and is paired with shortHeroContentProps
-// below, which trims the text block's own height on short viewports, so
-// clearance comes from both sides instead of leaning entirely on the crop.
+// This source is close enough to square that, unlike the old wide desk
+// photo, object-cover's height-driven scale here naturally keeps him
+// framed like a portrait rather than needing the oversized-wrapper crop
+// trick the old photo needed to avoid the text landing across his face —
+// he already occupies roughly the top 40-45% of the frame at full height,
+// leaving the lower half (shirt/torso, already the darkest part under the
+// scrim) as clearance for the text block. Re-verify that clearance at a
+// short viewport (~667px) before shipping any further change here, the
+// same way the old crop was verified — see hero.tsx's short-height
+// tightening, which still applies regardless of which photo is behind it.
 export function HeroArtworkMobileFull() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-x-0 bottom-0 h-[109%]">
-        <Image
-          src={ARTWORK_SRC}
-          alt={ARTWORK_ALT}
-          fill
-          priority
-          quality={95}
-          sizes="(min-width: 768px) 1px, 100vw"
-          className="object-cover object-[68%_100%]"
-        />
-      </div>
+      <Image
+        src={ARTWORK_SRC}
+        alt={ARTWORK_ALT}
+        fill
+        priority
+        quality={100}
+        sizes="(min-width: 768px) 1px, 100vw"
+        className="object-cover object-[50%_top]"
+      />
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/5"
+        className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/10"
       />
       <div
         aria-hidden="true"

@@ -6,29 +6,35 @@ export interface ExperienceEntry {
   technologies?: string[];
 }
 
-// Sourced directly from the resume Nandakumar supplied
-// (Nandakumar_Vuppalapati_Data_Engineer_Refined_Hybrid.docx) — employers,
-// dates, and scope are transcribed from that document, not invented. Each
-// `context` condenses that role's resume bullets into the site's voice;
-// nothing here states a claim the resume doesn't already make.
+// Sourced directly from Nandakumar's resume (Nandakumar_Vuppalapati_Resume_0926,
+// his final updated version) — titles, dates, metrics, and scope are
+// transcribed from that document, not invented. Each `context` condenses
+// that role's resume bullets into the site's voice; nothing here states a
+// claim the resume doesn't already make. Titles moved up a level from the
+// previous version (Junior Data Engineer -> Data Engineer at Sigmoid, Data
+// Scientist -> Associate Data Engineer at Tech Citi, AI Data Engineer ->
+// Senior Data Engineer at Workiva) and several bullets were replaced with
+// newer, more specific ones (quantified metrics, the separate AWS
+// Bedrock/Pinecone regulatory-search build at Workiva) — confirmed with
+// Nandakumar directly before publishing, since these differ meaningfully
+// from earlier resume drafts.
 export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
   {
     dateRange: "DEC 2025 — PRESENT",
-    role: "AI Data Engineer",
+    role: "Senior Data Engineer",
     organization: "Workiva · Remote, USA",
     context:
-      "Own production Python/Airflow pipelines across AWS for payments, risk, settlement and compliance data — including failure handling, reruns and recovery validation — plus the Snowflake/dbt models that turn that data into governed datasets for reporting and risk analysis. Also build Spark/Databricks feature and embedding pipelines for fraud and ML workflows, and a regulatory-document RAG prototype for natural-language compliance search.",
+      "Architect multi-tenant, high-throughput Python/PySpark/Airflow pipeline infrastructure across AWS (Glue, S3, Lambda, Step Functions), processing 1M+ daily financial records at 99.9% SLA compliance for risk and settlement analytics. Built modular Snowflake/dbt transformation frameworks with custom macros and data contracts across 30+ financial models, cutting monthly cloud compute cost 25% while speeding up dashboard queries. Added Prometheus/Grafana observability into Airflow that cut anomaly detection time (MTTD) 60%, and separately architected an enterprise regulatory-search pipeline on AWS Bedrock and Pinecone for sub-second natural-language search across thousands of SEC compliance filings.",
     technologies: [
       "Python",
+      "PySpark",
       "Airflow",
-      "AWS (S3, Glue, Lambda, Step Functions, Redshift)",
+      "AWS (S3, Glue, Lambda, Step Functions)",
       "Snowflake",
       "dbt",
-      "Databricks",
-      "Spark",
-      "MLflow",
+      "AWS Bedrock",
+      "Pinecone",
       "Prometheus/Grafana",
-      "LangChain",
     ],
   },
   {
@@ -36,13 +42,15 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
     role: "Data Engineer",
     organization: "Wellmark BCBS · Des Moines, USA",
     context:
-      "Consolidated 10M+ records from 30+ fragmented legacy healthcare sources into Azure SQL through Data Factory, then built the PySpark/Databricks transformation layer that replaced legacy SQL-heavy processing across medallion-style layers. Added dbt schema tests and Great Expectations checkpoints that caught schema, null and duplicate issues before curated data reached downstream consumers, plus an LLM-assisted search prototype across a 1,000+ document vendor-contract repository.",
+      "Built Azure Data Factory ingestion pipelines consolidating 10M+ records from 30+ legacy healthcare sources into ADLS Gen2 and Azure SQL, with automated PII masking and zero-trust security controls. Modernized legacy SQL processing into PySpark jobs on Azure Databricks across medallion-style layers, increasing ingestion throughput 45%. Enforced Great Expectations checkpoints and dbt schema assertions at ingestion boundaries to stop upstream schema drift before it broke downstream reporting, and provisioned the underlying infrastructure with Terraform, Docker, and GitHub Actions CI/CD across staging and production.",
     technologies: [
       "Azure Data Factory",
+      "Azure ADLS Gen2",
+      "Azure SQL",
       "PySpark",
       "Databricks",
-      "dbt",
       "Great Expectations",
+      "dbt",
       "Terraform",
       "Docker",
       "GitHub Actions",
@@ -50,18 +58,18 @@ export const EXPERIENCE_ENTRIES: ExperienceEntry[] = [
   },
   {
     dateRange: "JUN 2022 — DEC 2023",
-    role: "Junior Data Engineer",
+    role: "Data Engineer",
     organization: "Sigmoid · Bengaluru, India",
     context:
-      "Refactored T-SQL stored procedures and indexing behind recurring finance-reporting workloads to resolve long-running queries, and redesigned a flat reporting structure into a star-schema dimensional model in Azure Synapse. Built a Python validation framework with pytest checks integrated into ETL processing, and automated a manual weekly Excel workflow with scheduled Azure Data Factory pipelines, saving roughly 6 hours of manual work a week.",
-    technologies: ["T-SQL", "Azure Synapse", "Python", "pytest", "Azure Data Factory"],
+      "Refactored T-SQL queries and indexing in Azure Synapse analytics pools, cutting month-end financial reporting query times from 4 hours to under 15 minutes, and redesigned a flat reporting structure into a star-schema dimensional model for multi-region reporting. Built an automated data validation and reconciliation framework in Python/PyTest with Delta Lake assertions that cut upstream data corruption incidents 70%, and managed production reliability across 40+ concurrent Azure Data Factory jobs with automated retries, failure hooks, and dead-letter routing for uninterrupted 24/7 availability.",
+    technologies: ["T-SQL", "Azure Synapse", "Python", "PyTest", "Delta Lake", "Azure Data Factory"],
   },
   {
     dateRange: "JUL 2021 — DEC 2021",
-    role: "Data Scientist",
+    role: "Associate Data Engineer",
     organization: "Tech Citi Software · Bengaluru, India",
     context:
-      "Migrated historical loan and transaction data from Oracle to PostgreSQL, resolving schema and datatype mismatches along the way, and built Python/Airflow ETL workflows ingesting 50,000+ daily transaction records from CSV and REST API sources. Engineered transaction-level behavioral features and trained an offline XGBoost fraud-classification prototype, reaching an AUC-ROC of 0.85 in historical evaluation.",
-    technologies: ["Python", "Airflow", "PostgreSQL", "Oracle", "XGBoost"],
+      "Migrated historical financial transaction data from Oracle to PostgreSQL, handling schema mapping, datatype alignment, and automated reconciliation validation. Built Python/Airflow ETL workflows ingesting 50,000+ daily financial transaction records from REST APIs and flat files, replacing legacy manual data-loading processes.",
+    technologies: ["Python", "Airflow", "PostgreSQL", "Oracle"],
   },
 ];

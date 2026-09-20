@@ -27,7 +27,7 @@ export function About() {
 
             <div className="flex flex-col gap-5 text-base leading-relaxed text-foreground-muted lg:pt-2 lg:text-lg">
               <p>
-                I&rsquo;m an AI Data Engineer focused on building reliable data systems,
+                I&rsquo;m a Senior Data Engineer focused on building reliable data systems,
                 real-time pipelines and analytics-ready platforms that support modern
                 analytics and AI products.
               </p>
